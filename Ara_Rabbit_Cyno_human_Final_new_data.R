@@ -109,11 +109,6 @@ b <- avexp$RNA[intgenes,c("1","0","2","3")]
 C1 <- cor(b, method = "pearson")
 
 redblue1<-colorRampPalette(c("#245199","#FFFFFF","#D20000"))
-#mat_breaks <- seq(0, 2, length.out = 20)
-#pheatmap(log2(a+1),color =  redblue1(20),breaks = mat_breaks, border_color = NA, cluster_rows=TRUE,cluster_cols=TRUE,  filename = "~/Desktop/HM_ara_logged.pdf",,width=10,height=16)
-
-#mat_breaks <- seq(-1, 1, length.out = 20)
-#pheatmap(log2(a+1),color =  redblue1(20),breaks = mat_breaks, border_color = NA, cluster_rows=TRUE,cluster_cols=TRUE, scale="row", filename = "~/Desktop/HM_ara_logged_scaled.pdf",width=10,height=16)
 
 mat_breaks <- seq(0, 2, length.out = 20)
 pheatmap(log2(a+1),color =  redblue1(20),breaks = mat_breaks,gaps_row=c(6,11,16,21,29), border_color = NA, cluster_rows=FALSE,cluster_cols=FALSE,  filename = paste(saveext,"/DimRed/HM_ara_logged",".pdf",sep=""),width=8,height=16)
@@ -300,12 +295,13 @@ panel2 <- c("T",
             "GSC",
             "HAND1",
             "TBX6")
+
 panel3 <- c(
-"TFAP2C",
-"TFAP2A",
-"GATA3",
-"HAND1",
-"CD36")
+            "TFAP2C",
+            "TFAP2A",
+            "GATA3",
+            "HAND1",
+            "CD36")
 
 panel4 <- c("APOA1",
             "APOB",
@@ -317,24 +313,24 @@ panel4 <- c("APOA1",
             "PITX2")
 
 panel5 <- c("SOX17",
-"PRDM1",
-"TFAP2C",
-"PRDM14",
-"TFCP2L1",
-"CD38",
-"PDPN",
-"NANOS3",
-"UTF1",
-"ARID5B",
-"FGFR3",
-"DND1",
-"DPPA3",
-"SOX15",
-"TFAP2A",
-"LAMA4",
-"KIT",
-"DPPA5",
-"KLF4")
+           "PRDM1",
+           "TFAP2C",
+           "PRDM14",
+           "TFCP2L1",
+           "CD38",
+           "PDPN",
+           "NANOS3",
+           "UTF1",
+           "ARID5B",
+           "FGFR3",
+           "DND1",
+           "DPPA3",
+           "SOX15",
+           "TFAP2A",
+           "LAMA4",
+           "KIT",
+           "DPPA5",
+           "KLF4")
 
 pannel6 <- c("DAZL",
              "DDX4",
@@ -374,6 +370,7 @@ panel8 <- c("TRIM28",
             "TET2",
             "TET3",
             "TDG")
+
 panel9 <- c("SETDB1",
             "PRMT5",
             "KAP1",
@@ -383,27 +380,26 @@ panel9 <- c("SETDB1",
             "KMDM4B",
             "EHMT2")
 
-
 panel10 <- c("NANOG",
-"FAM162",
-"S100A10",
-"LAMA4",
-"DPPA5",
-"IFI16",
-"NANOS3",
-"PCSK1N",
-"RASD1",
-"SDCBP",
-"SAT1",
-"FAM122C",
-"PDPN",
-"ASRGL1",
-"HERC5",
-"MKRN1",
-"CDK2AP1",
-"SOX15",
-"IFITM1",
-"RMND1")
+           "FAM162",
+           "S100A10",
+           "LAMA4",
+           "DPPA5",
+           "IFI16",
+           "NANOS3",
+           "PCSK1N",
+           "RASD1",
+           "SDCBP",
+           "SAT1",
+           "FAM122C",
+           "PDPN",
+           "ASRGL1",
+           "HERC5",
+           "MKRN1",
+           "CDK2AP1",
+           "SOX15",
+           "IFITM1",
+           "RMND1")
 
 panel11 <- c("HMGN2",
              "MDK",
@@ -429,86 +425,11 @@ panel11 <- c("HMGN2",
 
 Data <- GetAssayData(mammal.combined,assay = "RNA")
 
-#try 2
-rabbit_data3 <- merge(rabbit_data, y = c(rabbit_data2), project = "merged")
-
-#Rename to keep variable convention for the join species modelling
-mammal.anchors <- FindIntegrationAnchors(object.list = list(cynomolgous_data, rabbit_data3, human_dataA1 ), dims = 1:20, anchor.features = 4000, k.filter = 20)
-mammal.combined <- IntegrateData(anchorset = mammal.anchors, dims = 1:20)
-DefaultAssay(mammal.combined) <- "integrated"
-mammal.combined <- ScaleData(mammal.combined, verbose = FALSE)
-mammal.combined <- RunPCA(mammal.combined, npcs = 30, verbose = FALSE)
-mammal.combined <- RunUMAP(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- RunTSNE(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- FindNeighbors(mammal.combined, reduction = "pca", dims = 1:20)
-DimPlot(mammal.combined, reduction = "pca", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/PCA_split","_v2_1.pdf",sep=""),width = 16, height = 4)
-DimPlot(mammal.combined, reduction = "tsne", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/TSNE_split","_v2_1.pdf",sep=""),width = 16, height = 4)
-DimPlot(mammal.combined, reduction = "umap", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/UMAP_split","_v2_1.pdf",sep=""),width = 16, height = 4)
-
-
-
-#Rename to keep variable convention for the join species modelling
-mammal.anchors <- FindIntegrationAnchors(object.list = list(cynomolgous_data, rabbit_data3, human_dataA1 ), dims = 1:20, anchor.features = 4000, k.filter = 40)
-mammal.combined <- IntegrateData(anchorset = mammal.anchors, dims = 1:20)
-DefaultAssay(mammal.combined) <- "integrated"
-mammal.combined <- ScaleData(mammal.combined, verbose = FALSE)
-mammal.combined <- RunPCA(mammal.combined, npcs = 30, verbose = FALSE)
-mammal.combined <- RunUMAP(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- RunTSNE(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- FindNeighbors(mammal.combined, reduction = "pca", dims = 1:20)
-DimPlot(mammal.combined, reduction = "pca", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/PCA_split","_v2_2.pdf",sep=""),width = 16, height = 4)
-DimPlot(mammal.combined, reduction = "tsne", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/TSNE_split","_v2_2.pdf",sep=""),width = 16, height = 4)
-DimPlot(mammal.combined, reduction = "umap", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/UMAP_split","_v2_2.pdf",sep=""),width = 16, height = 4)
-
-mammal.combined$ID1 <- Idents(mammal.combined)
-
-#Rename to keep variable convention for the join species modelling
-mammal.anchors <- FindIntegrationAnchors(object.list = list(cynomolgous_data, rabbit_data3, human_dataA1 ), dims = 1:20, anchor.features = 4000, k.filter = 60)
-mammal.combined <- IntegrateData(anchorset = mammal.anchors, dims = 1:20)
-DefaultAssay(mammal.combined) <- "integrated"
-mammal.combined <- ScaleData(mammal.combined, verbose = FALSE)
-mammal.combined <- RunPCA(mammal.combined, npcs = 30, verbose = FALSE)
-mammal.combined <- RunUMAP(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- RunTSNE(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- FindNeighbors(mammal.combined, reduction = "pca", dims = 1:20)
-DimPlot(mammal.combined, reduction = "pca", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/PCA_split","_v2_3.pdf",sep=""),width = 16, height = 4)
-DimPlot(mammal.combined, reduction = "tsne", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/TSNE_split","_v2_3.pdf",sep=""),width = 16, height = 4)
-DimPlot(mammal.combined, reduction = "umap", split.by = "species2", label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/UMAP_split","_v2_3.pdf",sep=""),width = 16, height = 4)
-
-
-
-#Rename to keep variable convention for the join species modelling
-mammal.anchors <- FindIntegrationAnchors(object.list = list(cynomolgous_data, rabbit_data3, human_dataA1 ), dims = 1:20, anchor.features = 4000)
-mammal.combined <- IntegrateData(anchorset = mammal.anchors, dims = 1:20)
-
-#mammal.anchors1 <- FindIntegrationAnchors(object.list = list(cynomolgous_data, rabbit_data, human_dataA1 ), dims = 1:20, anchor.features = union(rownames(mammal.combined1), intersect(intersect(intersect(Markers,rownames(rabbit_data)),rownames(cynomolgous_data) ),rownames(human_dataA1) ) ) )
-#mammal.combined1 <- IntegrateData(anchorset = mammal.anchors1, dims = 1:20)
-DefaultAssay(mammal.combined) <- "integrated"
-mammal.combined <- ScaleData(mammal.combined, verbose = FALSE)
-mammal.combined <- RunPCA(mammal.combined, npcs = 30, verbose = FALSE)
-mammal.combined <- RunUMAP(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- RunTSNE(mammal.combined, reduction = "pca", dims = 1:20)
-mammal.combined <- FindNeighbors(mammal.combined, reduction = "pca", dims = 1:20)
-#mammal.combined <- FindClusters(mammal.combined, resolution = 0.5)
-saveRDS(mammal.combined, file = paste(saveext,"mammal.combined2.rds",sep=""))
-
-
-
 
 mammal.combined <- FindClusters(mammal.combined, resolution = 0.1)
 mammal.combined$Cl1 <- Idents(mammal.combined)
 DimPlot(mammal.combined, reduction = "umap", split.by = "species2", label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/UMAP_split_Cl1",".pdf",sep=""),width = 20, height = 8)
-#Idents(mammal.combined) <- factor(c( as.character(cylabs),  as.character(RabbitBS$TimePoint) )) #c(labs2,labscy) #labs2
 
 mammal.combined <- FindClusters(mammal.combined, resolution = 0.2)
 mammal.combined$Cl2 <- Idents(mammal.combined)
@@ -559,22 +480,6 @@ ggsave(filename=paste(saveext,"/DimRed/UMAP_split_Cl11",".pdf",sep=""),width = 2
 DimPlot(mammal.combined, reduction = "pca", split.by = "species2", label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/PCA_split_Cl11",".pdf",sep=""),width = 20, height = 8)
 
-
-#Idents(mammal.combined) <- mammal.combined$ID1
-
-#DimPlot(mammal.combined, reduction = "pca", split.by = "species", label = TRUE, repel = TRUE)
-#ggsave(filename=paste(saveext,"/DimRed/PCA_split_anno",".pdf",sep=""),width = 20, height = 8)
-
-#DimPlot(mammal.combined, reduction = "tsne", split.by = "species", label = TRUE, repel = TRUE)
-#ggsave(filename=paste(saveext,"/DimRed/TSNE_split_anno",".pdf",sep=""),width = 20, height = 8)
-
-#DimPlot(mammal.combined, reduction = "umap", split.by = "species", label = TRUE, repel = TRUE)
-#ggsave(filename=paste(saveext,"/DimRed/UMAP_split_anno",".pdf",sep=""),width = 20, height = 8)
-#Idents(mammal.combined) <- factor(c( as.character(cylabs),  as.character(RabbitBS$TimePoint) )) #c(labs2,labscy) #labs2
-
-
-
-
 Idents(mammal.combined) <- mammal.combined$Cl6
 mamsubset <- subset(mammal.combined, idents = c("2","4","9","3","1","6","8"), invert = TRUE)
 Idents(mamsubset) <- mamsubset$ID1
@@ -602,15 +507,6 @@ Idents(mamsubset) <- colnames(mamsubset)
 p <- DimPlot(mamsubset, reduction = "umap", split.by = "species", label = TRUE, repel = TRUE)+ NoLegend()
 ggsave(filename=paste(saveext,"/DimRed/UMAP_split_subset_fulllabels",".pdf",sep=""),width = 100, height = 50, p, limitsize = FALSE)
 
-
-#mamsubset <- FindClusters(mamsubset, resolution = 10.5)
-
-#DimPlot(mamsubset, reduction = "umap", split.by = "species", label = TRUE, repel = TRUE)
-#ggsave(filename=paste(saveext,"/DimRed/UMAP_split_subset_Cl",".pdf",sep=""),width = 20, height = 8)
-#ggsave(filename=paste(saveext,"/DimRed/PCA_split_subset_Cl",".pdf",sep=""),width = 20, height = 8)
-##DimPlot(mamsubset, reduction = "pca", split.by = "species", label = TRUE, repel = TRUE)
-
-#wC1 <- WhichCells(mamsubset, idents = "11")
 Idents(mamsubset) <- mamsubset$species
 wC1 <-c("SLX.17852.i729_i515","SLX.17852.i715_i511","SLX.17852.i728_i522","SLX.17852.i712_i515")
 wC2 <-c("SLX.17852.i729_i517","SLX.17852.i729_i507","SLX.17852.i729_i508","SLX.12935.i707_i506","SLX.12935.i702_i521")
@@ -618,7 +514,6 @@ wC3 <- c("SLX.12935.i704_i508","SLX.12935.i719_i505","SLX.12935.i716_i508","SLX.
 #wC2 <- WhichCells(mamsubset, idents ="1) Rabbit")
 #wC3 <- WhichCells(object = mamsubset, expression = NANOS3 > 0)
 #wC4 <- intersect(wC2,wC3)
-
 #wC3 <- subset(mammal.combined, subset = NANOS3 > 1)
 
 Idents(mammal.combined) <- mammal.combined$Cl11
