@@ -9,97 +9,22 @@ library(scran)
 set.seed(1)
 
 #Tediously add all the folders can shortcut this later when we have finalised everything.
-saveext = "~/Desktop/Thorsten/FINAL/Rabbit_Analysis_with_new_datav2/"
+saveext = "/Rabbit_Analysis1/"
 dir.create(saveext)
 dir.create(paste(saveext,"/Markers/",sep=""))
 dir.create(paste(saveext,"/DimRed/",sep=""))
-dir.create(paste(saveext,"/Docs/",sep=""))
-dir.create(paste(saveext,"/Monocle/",sep=""))
-
 
 oldrabbit <- readRDS(paste(saveext,"/OldAnnotations.rds",sep=""))
 
-#Rabbit 2
-RabbitBS2<-read.table("/Users/christopherpenfold/Desktop/Ara/Rabbit_meta_2.csv",sep=",", header = T, row.names=1)
-#R2 <- read.table("/Users/christopherpenfold/Desktop/Ara/featurecountsAll_base_rabbit_v2.csv",sep=",",header = T, row.names=1)
-R2 <- read.table("/Users/christopherpenfold/Desktop/Ara/featurecountsAll_base_test.txt",sep="\t",header = T, row.names=1)
-RabitSCE <- SingleCellExperiment( list(counts = as.matrix(R2) ) )
-clusters <- quickCluster(RabitSCE, min.size=30)
-Rsce <- computeSumFactors(RabitSCE, clusters=clusters)
-Rsce <- assay(Rsce, "counts")
-#sce <- logNormCounts(Rsce)
-Genes<-read.table("/Users/christopherpenfold/Desktop/Misc/RabbitGenes2.csv",sep=",",header = T)
-counts1 <- assay(RabitSCE, "counts")
-rownames(counts1) <- Genes$Gene
-rabbit_data2 <- CreateSeuratObject(counts = counts1, assay = "RNA",min.cells = 0, min.features = 0)
-rabbit_data2$species <- "1) Rabbit"
-rabbit_data2$species2 <- "1) Rabbit_2"
-Idents(rabbit_data2) <- RabbitBS2$Type
-rabbit_data2 <- NormalizeData(rabbit_data2, verbose = FALSE)
-rabbit_data2 <- FindVariableFeatures(rabbit_data2, selection.method = "vst", nfeatures = 20000)
-
-
-#ENSOCUG00000012651 <- "SOX17"
-#ENSOCUG00000010996 <- "TFAP2C"
-#ENSOCUG00000013783 <- "NANOG"
-#ENSOCUG00000014595 <- "TBX3"
-#ENSOCUG00000012254 <- "SNAI2"
-#ENSOCUG00000004992 <- "TDGF1"
-#rownames(RabitSCE)[which(rownames(RabitSCE)=="ENSOCUG00000012254")] <- "SNAI2"
-#rownames(RabitSCE)[which(rownames(RabitSCE)=="ENSOCUG00000004992")] <- "SNAI2"
-
-#rabbit_data2 <- CreateSeuratObject(counts = Rsce, assay = "RNA",min.cells = 0, min.features = 0)
-#rabbit_data2$species <- "1) Rabbit"
-#rabbit_data2$species2 <- "1) Rabbit_2"
-#rabbit_data2 <- subset(rabbit_data2, subset = nFeature_RNA > 0)
-#rabbit_data2 <- NormalizeData(rabbit_data2, verbose = FALSE)
-#rabbit_data2 <- FindVariableFeatures(rabbit_data2, selection.method = "vst", nfeatures = 20000)
-#Idents(rabbit_data2) <- RabbitBS2$Type#
-
+#Read second batch of data
+rabbit_data <- readRDS("Data/Rabbit_SCE_1.rds")
+rabbit_data2 <- readRDS("Data/Rabbit_SCE_2.rds")
 #Human
-hBS<-read.table("/Users/christopherpenfold/Desktop/Aracely/humanIDs.csv",sep=",",header = T, row.names=1)
-raw_countsA1<-read.table("/Users/christopherpenfold/Desktop/Aracely/featurecountsLi.csv",sep=",",header = T, row.names=1)
-raw_countsA1 <- raw_countsA1[,2:dim(raw_countsA1)[2]]
-human_dataA1 <- CreateSeuratObject(counts = na.omit(raw_countsA1), assay = "RNA",min.cells = 0, min.features = 0)
-human_dataA1$species <- "4) Human (in vitro)"
-human_dataA1$species2 <- "4) Human (in vitro)"
-Idents(human_dataA1) <- hBS$Type5
-human_dataA1 <- subset(human_dataA1, subset = nFeature_RNA > 0)
-human_dataA1 <- NormalizeData(human_dataA1, verbose = FALSE)
-human_dataA1 <- FindVariableFeatures(human_dataA1, selection.method = "vst", nfeatures = 20000)
-
+human_dataA1 <- readRDS("Data/Human_SCE.rds")
 #Cyno
-cyBS<-read.table("/Users/christopherpenfold/Desktop/Thorsten/CombinedModelling/cynomolgous/cyKey.csv",sep=",", header = T, row.names=1)
-raw_counts1<-read.table("/Users/christopherpenfold/Desktop/Thorsten/CombinedModelling/cynomolgous/featurecountsNakamura3.csv",sep=",",header = T, row.names=1)
-cynomolgous_data <- CreateSeuratObject(counts = raw_counts1[,which(cyBS$Emb5>0)], assay = "RNA",min.cells = 0, min.features = 0)
-Idents(cynomolgous_data) <- cyBS$LABEL_4[which(cyBS$Emb5>0)]
-cynomolgous_data$species <- "2) Cynomolgous"
-cynomolgous_data$species2 <- "2) Cynomolgous"
-cynomolgous_data <- subset(cynomolgous_data, subset = nFeature_RNA > 0)
-cynomolgous_data <- NormalizeData(cynomolgous_data, verbose = FALSE)
-cynomolgous_data <- FindVariableFeatures(cynomolgous_data, selection.method = "vst", nfeatures = 20000)
+cynomolgous_data <- readRDS("Data/Cyno_SCE.rds")
 
-
-#Load marmoset data key
-RabbitBS<-read.table("/Users/christopherpenfold/Desktop/Ara/Rabbit_meta.tsv",sep="\t", header = T, row.names=1)
-
-D1 <-readRDS('/Users/christopherpenfold/Desktop/Ara/Rabbit_SCE.RDS')
-Genes<-read.table("/Users/christopherpenfold/Desktop/Misc/RabbitGenes1.csv",sep=",",header = T)
-counts1 <- assay(D1, "counts")
-rownames(counts1) <- Genes$Gene
-rabbit_data <- CreateSeuratObject(counts = counts1, assay = "RNA",min.cells = 0, min.features = 0)
-rabbit_data$species <- "1) Rabbit"
-rabbit_data$species2 <- "1) Rabbit"
-Idents(rabbit_data) <- as.character(RabbitBS$TimePoint)
-rabbit_data$ID1 <- as.character(RabbitBS$TimePoint)
-rabbit_data$ID2 <- as.character(RabbitBS$TimePoint)
-rabbit_data$ID3 <- as.character(RabbitBS$TimePoint)
-rabbit_data <- NormalizeData(rabbit_data, verbose = FALSE)
-rabbit_data <- FindVariableFeatures(rabbit_data, selection.method = "vst", nfeatures = 20000)
-
-
-TF<-read.table("/Users/christopherpenfold/Desktop/Thorsten/Leaving_package/Dimensionality\ reduction\ techniques\ smart-seq2\ -\ Boroviaklab\ data/Human_TF_MasterList_v1_02.csv",sep=",",header = F, row.names=2)
-
+TF<-read.table("Data/Human_TF_MasterList_v1_02.csv",sep=",",header = F, row.names=2)
 
 Markers <- c("SALL4",
              "ESRRB",
@@ -131,8 +56,7 @@ Markers <- c("SALL4",
              "PDPN",
              "ALPL")
 
-
-
+#First just look at second dataset
 nrabbit_data3 <- rabbit_data2 #merge(rabbit_data, y = c(rabbit_data2), project = "merged")
 nrabbit_data3 <- FindVariableFeatures(nrabbit_data3, selection.method = "vst", nfeatures = 3000)
 nrabbit_data3 <- ScaleData(nrabbit_data3, verbose = FALSE)
@@ -141,13 +65,10 @@ nrabbit_data3 <- RunUMAP(nrabbit_data3, reduction = "pca", dims = 1:20)
 nrabbit_data3 <- RunTSNE(nrabbit_data3, reduction = "pca", dims = 1:20)
 nrabbit_data3 <- FindNeighbors(nrabbit_data3, reduction = "pca", dims = 1:20)
 
-
 DimPlot(nrabbit_data3, reduction = "tsne",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/TSNE_nrab3",".pdf",sep=""),width = 8, height = 8)
-
 DimPlot(nrabbit_data3, reduction = "umap",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/UMAP_nrab3",".pdf",sep=""),width = 8, height = 8)
-
 DimPlot(nrabbit_data3, reduction = "pca",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/PCA_split_nrab3",".pdf",sep=""),width = 8, height = 8)
 
@@ -159,25 +80,19 @@ nrabbit_data3 <- RunUMAP(nrabbit_data3, reduction = "pca", dims = 1:20)
 nrabbit_data3 <- RunTSNE(nrabbit_data3, reduction = "pca", dims = 1:20)
 nrabbit_data3 <- FindNeighbors(nrabbit_data3, reduction = "pca", dims = 1:20)
 
-
 DimPlot(nrabbit_data3, reduction = "tsne",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/TSNE_nrab4",".pdf",sep=""),width = 8, height = 8)
-
 DimPlot(nrabbit_data3, reduction = "umap",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/UMAP_nrab4",".pdf",sep=""),width = 8, height = 8)
-
 DimPlot(nrabbit_data3, reduction = "pca",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/PCA_split_nrab4",".pdf",sep=""),width = 8, height = 8)
 
 
 nrabbit_data3 <- FindClusters(nrabbit_data3, resolution = 1.5)
-
 DimPlot(nrabbit_data3, reduction = "tsne",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/TSNE_rab3","_cl.pdf",sep=""),width = 8, height = 8)
-
 DimPlot(nrabbit_data3, reduction = "umap",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/UMAP_rab3","_cl.pdf",sep=""),width = 8, height = 8)
-
 DimPlot(nrabbit_data3, reduction = "pca",  label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/PCA_split_rab3","_cl.pdf",sep=""),width = 8, height = 8)
 
@@ -187,8 +102,6 @@ avexp  <- AverageExpression(object = nrabbit_data3, slot = "data")
 
 a <- avexp$RNA
 a <- a[Markers,c("1","0","2","3")]
-
-
 
 intgenes <- rownames(avexp$RNA)
 b <- avexp$RNA[intgenes,c("1","0","2","3")]
@@ -208,7 +121,6 @@ pheatmap(log2(a+1),color =  redblue1(20),breaks = mat_breaks,gaps_row=c(6,11,16,
 mat_breaks <- seq(-1, 1, length.out = 20)
 pheatmap(log2(a+1),color =  redblue1(20),breaks = mat_breaks,gaps_row=c(6,11,16,21,29), border_color = NA, cluster_rows=FALSE,cluster_cols=FALSE, scale="row", filename = paste(saveext,"/DimRed/HM_ara_logged_scaled",".pdf",sep=""),width=8,height=16)
 
-
 mat_breaks <- seq(0.8, 0.92, length.out = 20)
 pheatmap(C1[c("1","0","2","3"),c("1","0","2","3")],color =  redblue1(20), border_color = NA, cluster_rows=FALSE,cluster_cols=FALSE, filename = paste(saveext,"/DimRed/Sample_corr",".pdf",sep=""),width=4,height=4)
 
@@ -216,46 +128,10 @@ pheatmap(C1[c("1","0","2","3"),c("1","0","2","3")],color =  redblue1(20), border
 
 FeaturePlot(nrabbit_data3, features = "SOX17", cols =  c("lightgrey", "darkblue"), pt.size = 5)
 ggsave(filename=paste(saveext,"/Markers/Marker_full_SOX17.pdf",sep=""),width = 10, height = 10,limitsize = FALSE)
-
-
 FeaturePlot(nrabbit_data3, features = "NANOS3", cols =  c("lightgrey", "darkblue"), pt.size = 5)
 ggsave(filename=paste(saveext,"/Markers/Marker_full_NANOS3.pdf",sep=""),width = 10, height = 10,limitsize = FALSE)
-
-
 FeaturePlot(nrabbit_data3, features = "SOX2", cols =  c("lightgrey", "darkblue"), pt.size = 5)
 ggsave(filename=paste(saveext,"/Markers/Marker_full_SOX2.pdf",sep=""),width = 10, height = 10,limitsize = FALSE)
-
-
-
-#saveRDS(rabbit_data, file = paste(saveext,"rabbit_data.rds",sep=""))
-#Already regressed out cell cycle? Can't help to redo to be sure.
-#humaninvit2_data <- CellCycleScoring(humaninvit2_data, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
-#RidgePlot(humaninvit2_data, features = c("PCNA", "TOP2A", "MCM6", "MKI67"), ncol = 2)
-#ggsave(filename=paste(saveext,"Human_invitro2_ridge",".pdf",sep=""),width = 8, height = 8)
-#humainvit2_data <- ScaleData(humaninvit2_data, vars.to.regress = c("S.Score", "G2M.Score"), features = rownames(humaninvit2_data))
-#humainvit2_data <- ScaleData(humaninvit2_data) #, vars.to.regress = c("S.Score", "G2M.Score"), features = rownames(humaninvit2_data))
-#saveRDS(humaninvit2_data, file = paste(saveext,"humaninvit2_data.rds",sep=""))
-
-
-rabbit_data3 <- merge(rabbit_data, y = c(rabbit_data2), project = "merged")
-rabbit_data3 <- FindVariableFeatures(rabbit_data3, selection.method = "vst", nfeatures = 3000)
-rabbit_data3 <- ScaleData(rabbit_data3, verbose = FALSE)
-rabbit_data3 <- RunPCA(rabbit_data3, npcs = 30, verbose = FALSE)
-rabbit_data3 <- RunUMAP(rabbit_data3, reduction = "pca", dims = 1:20)
-rabbit_data3 <- RunTSNE(rabbit_data3, reduction = "pca", dims = 1:20)
-rabbit_data3 <- FindNeighbors(rabbit_data3, reduction = "pca", dims = 1:20)
-
-DimPlot(rabbit_data3, reduction = "tsne",  label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/TSNE_rab3",".pdf",sep=""),width = 8, height = 8)
-
-DimPlot(rabbit_data3, reduction = "umap",  label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/UMAP_rab3",".pdf",sep=""),width = 8, height = 8)
-
-DimPlot(rabbit_data3, reduction = "pca",  label = TRUE, repel = TRUE)
-ggsave(filename=paste(saveext,"/DimRed/PCA_split_rab3",".pdf",sep=""),width = 8, height = 8)
-
-
-
 
 #Rename to keep variable convention for the join species modelling
 mammal.anchors <- FindIntegrationAnchors(object.list = list(cynomolgous_data, rabbit_data, rabbit_data2, human_dataA1 ), dims = 1:20, anchor.features = 4000, k.filter = 20)
@@ -266,6 +142,7 @@ mammal.combined <- RunPCA(mammal.combined, npcs = 30, verbose = FALSE)
 mammal.combined <- RunUMAP(mammal.combined, reduction = "pca", dims = 1:20)
 mammal.combined <- RunTSNE(mammal.combined, reduction = "pca", dims = 1:20)
 mammal.combined <- FindNeighbors(mammal.combined, reduction = "pca", dims = 1:20)
+
 DimPlot(mammal.combined, reduction = "pca", split.by = "species", label = TRUE, repel = TRUE)
 ggsave(filename=paste(saveext,"/DimRed/PCA_1",".pdf",sep=""),width = 16, height = 4)
 DimPlot(mammal.combined, reduction = "tsne", split.by = "species", label = TRUE, repel = TRUE)
